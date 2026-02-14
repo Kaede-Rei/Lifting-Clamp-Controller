@@ -7,7 +7,7 @@
 #define _s_lift_control_h_
 
 #include "d_encoder.h"
-#include "d_lift_motor.h"
+#include "d_relay.h"
 #include <stdint.h>
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
@@ -22,7 +22,7 @@ struct LiftControl {
      * @param   motor 电机对象
      * @retval  None
      */
-    void (*init)(LiftControl* self, Encoder* enc, LiftMotor* motor);
+    void (*init)(LiftControl* self, Encoder* enc, Relay* motor);
     /**
      * @brief   设定目标高度差
      * @param   self 升降机控制器对象
@@ -36,7 +36,7 @@ struct LiftControl {
      * @param   dir 方向
      * @retval  None
      */
-    void (*manual)(LiftControl* self, LiftDir_e dir);
+    void (*manual)(LiftControl* self, RelayDir_e dir);
     /**
      * @brief   控制循环更新
      * @param   self 升降机控制器对象
@@ -46,11 +46,11 @@ struct LiftControl {
 
 // private:
     Encoder* _encoder_;
-    LiftMotor* _motor_;
+    Relay* _motor_;
     int32_t _target_pos_;
     float _height_diff_;
     uint8_t _rcvd_flag_;
-    LiftDir_e _manual_dir_;
+    RelayDir_e _manual_dir_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //

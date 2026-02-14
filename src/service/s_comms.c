@@ -98,15 +98,15 @@ static void _process(Comms* self) {
         /* 单字节电机指令 (仅在非字符串解析状态下有效) */
         if(!self->_parsing_) {
             if(byte == 0x01) {
-                self->_lift_->manual(self->_lift_, LiftDirUp_e);
+                self->_lift_->manual(self->_lift_, RelayDirA_e);
                 continue;
             }
             else if(byte == 0x02) {
-                self->_lift_->manual(self->_lift_, LiftDirDown_e);
+                self->_lift_->manual(self->_lift_, RelayDirB_e);
                 continue;
             }
             else if(byte == 0x00) {
-                self->_lift_->manual(self->_lift_, LiftDirStop_e);
+                self->_lift_->manual(self->_lift_, RelayDirStop_e);
                 continue;
             }
         }

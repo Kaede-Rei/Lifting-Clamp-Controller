@@ -1,8 +1,6 @@
 /**
  * @file  d_encoder.c
  * @brief 编码器驱动实现
- *        TIM2 编码器模式, PA0=CH1, PA1=CH2
- *        读取脉冲并换算为毫米位移与速度
  */
 #include "d_encoder.h"
 #include "timer.h"
@@ -58,6 +56,7 @@ static int _read_raw(const tim_cfg_t* cfg) {
  * @retval  None
  */
 static void _init(Encoder* self, const tim_cfg_t* cfg, int period_ms) {
+
     self->_total_pulses_ = 0;
     self->_position_mm_ = 0;
     self->_speed_ = 0;

@@ -17,8 +17,8 @@ Total : 30 files,  1469 codes, 852 comments, 431 blanks, all 2752 lines
 | [src/driver/d\_encoder.h](/src/driver/d_encoder.h) | C++ | 16 | 30 | 8 | 54 |
 | [src/driver/d\_gripper.c](/src/driver/d_gripper.c) | C | 37 | 43 | 13 | 93 |
 | [src/driver/d\_gripper.h](/src/driver/d_gripper.h) | C++ | 15 | 31 | 8 | 54 |
-| [src/driver/d\_lift\_motor.c](/src/driver/d_lift_motor.c) | C | 45 | 34 | 15 | 94 |
-| [src/driver/d\_lift\_motor.h](/src/driver/d_lift_motor.h) | C++ | 16 | 24 | 8 | 48 |
+| [src/driver/d\_lift\_motor.c](/src/driver/d_relay.c) | C | 45 | 34 | 15 | 94 |
+| [src/driver/d\_lift\_motor.h](/src/driver/d_relay.h) | C++ | 16 | 24 | 8 | 48 |
 | [src/hal/can.c](/src/hal/can.c) | C | 108 | 36 | 24 | 168 |
 | [src/hal/can.h](/src/hal/can.h) | C++ | 34 | 19 | 11 | 64 |
 | [src/hal/dwt.c](/src/hal/dwt.c) | C | 17 | 24 | 14 | 55 |

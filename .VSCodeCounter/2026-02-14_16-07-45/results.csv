@@ -5,8 +5,8 @@
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_encoder.h", "C++", 16, 0, 30, 8, 54
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_gripper.c", "C", 0, 37, 43, 13, 93
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_gripper.h", "C++", 15, 0, 31, 8, 54
-"d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_lift_motor.c", "C", 0, 45, 34, 15, 94
-"d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_lift_motor.h", "C++", 16, 0, 24, 8, 48
+"d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_relay.c", "C", 0, 45, 34, 15, 94
+"d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\driver\d_relay.h", "C++", 16, 0, 24, 8, 48
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\hal\can.c", "C", 0, 108, 36, 24, 168
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\hal\can.h", "C++", 34, 0, 19, 11, 64
 "d:\Desktop\Learn\AgroTech\番茄樱桃采摘系统\下位机\STM32\src\hal\dwt.c", "C", 0, 17, 24, 14, 55

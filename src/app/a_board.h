@@ -11,7 +11,7 @@
 #include "systick.h"
 #include "dwt.h"
 #include "d_encoder.h"
-#include "d_lift_motor.h"
+#include "d_relay.h"
 #include "d_gripper.h"
 #include "s_comms.h"
 #include "s_lift_control.h"
@@ -27,7 +27,7 @@ extern usart_t usart2;
 extern tim_t tick;
 
 extern Encoder lift_encoder;
-extern LiftMotor lift_motor;
+extern Relay relay;
 extern Gripper gripper;
 extern Comms comms;
 extern LiftControl lift_ctrl;

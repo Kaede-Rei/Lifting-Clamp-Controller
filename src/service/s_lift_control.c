@@ -15,9 +15,9 @@
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
-static void _init(LiftControl* self, Encoder* enc, LiftMotor* motor);
+static void _init(LiftControl* self, Encoder* enc, Relay* motor);
 static void _set_height(LiftControl* self, float delta_mm);
-static void _manual(LiftControl* self, LiftDir_e dir);
+static void _manual(LiftControl* self, RelayDir_e dir);
 static void _update(LiftControl* self);
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
@@ -34,7 +34,7 @@ LiftControl lift_ctrl_create(void) {
     obj._target_pos_ = 0;
     obj._height_diff_ = 0.0f;
     obj._rcvd_flag_ = 0;
-    obj._manual_dir_ = LiftDirStop_e;
+    obj._manual_dir_ = RelayDirStop_e;
     obj.init = _init;
     obj.set_height = _set_height;
     obj.manual = _manual;
@@ -51,13 +51,13 @@ LiftControl lift_ctrl_create(void) {
  * @param   motor 电机对象
  * @retval  None
  */
-static void _init(LiftControl* self, Encoder* enc, LiftMotor* motor) {
+static void _init(LiftControl* self, Encoder* enc, Relay* motor) {
     self->_encoder_ = enc;
     self->_motor_ = motor;
     self->_target_pos_ = 0;
     self->_height_diff_ = 0.0f;
     self->_rcvd_flag_ = 0;
-    self->_manual_dir_ = LiftDirStop_e;
+    self->_manual_dir_ = RelayDirStop_e;
 }
 
 /**
@@ -77,7 +77,7 @@ static void _set_height(LiftControl* self, float delta_mm) {
  * @param   dir 方向
  * @retval  None
  */
-static void _manual(LiftControl* self, LiftDir_e dir) {
+static void _manual(LiftControl* self, RelayDir_e dir) {
     self->_manual_dir_ = dir;
 }
 
@@ -98,7 +98,7 @@ static void _update(LiftControl* self) {
     }
 
     /* 手动模式优先 */
-    if(self->_manual_dir_ != LiftDirStop_e) {
+    if(self->_manual_dir_ != RelayDirStop_e) {
         self->_motor_->set_dir(self->_motor_, self->_manual_dir_);
         return;
     }
@@ -108,7 +108,7 @@ static void _update(LiftControl* self) {
         int32_t error = self->_target_pos_ - pos;
         if(abs(error) > POSITION_TOLERANCE) {
             self->_motor_->set_dir(self->_motor_,
-                error > 0 ? LiftDirUp_e : LiftDirDown_e);
+                error > 0 ? RelayDirA_e : RelayDirB_e);
         }
         else {
             self->_motor_->stop(self->_motor_);

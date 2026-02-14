@@ -1,13 +1,10 @@
 /**
  * @file  d_encoder.h
  * @brief 编码器驱动
- *        TIM2 编码器模式, PA0=CH1, PA1=CH2
- *        读取脉冲并换算为毫米位移与速度
  */
 #ifndef _d_encoder_h_
 #define _d_encoder_h_
 
-#include "stm32f10x.h"
 #include "timer.h"
 
 #include <stdint.h>

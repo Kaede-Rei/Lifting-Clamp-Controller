@@ -1,47 +1,57 @@
 /**
- * @file  d_lift_motor.h
- * @brief 升降台电机驱动
- *        PB0 / PB1 控制启停和方向
+ * @file  d_relay.h
+ * @brief 继电器驱动
  */
-#ifndef _d_lift_motor_h_
-#define _d_lift_motor_h_
+#ifndef _d_relay_h_
+#define _d_relay_h_
 
 #include "stm32f10x.h"
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
-typedef enum {
-    LiftDirStop_e = 0,
-    LiftDirUp_e,
-    LiftDirDown_e
-} LiftDir_e;
+typedef struct {
+    uint32_t rcc_mask;
+    uint8_t rcc_bus;       /* 1 = APB1, 2 = APB2 */
+    GPIO_TypeDef* port;
+    uint16_t pin_a;
+    uint16_t pin_b;
+} relay_cfg_t;
 
-typedef struct LiftMotor LiftMotor;
-struct LiftMotor {
+typedef enum {
+    RelayDirStop_e = 0,
+    RelayDirA_e,
+    RelayDirB_e
+} RelayDir_e;
+
+typedef struct Relay Relay;
+struct Relay {
 // public:
     /**
      * @brief   初始化电机
      * @param   self 电机对象
      * @retval  None
      */
-    void (*init)(LiftMotor* self);
+    void (*init)(Relay* self, const relay_cfg_t* cfg);
     /**
      * @brief   设置电机方向
      * @param   self 电机对象
      * @param   dir 方向
      * @retval  None
      */
-    void (*set_dir)(LiftMotor* self, LiftDir_e dir);
+    void (*set_dir)(Relay* self, RelayDir_e dir);
     /**
      * @brief   停止电机
      * @param   self 电机对象
      * @retval  None
      */
-    void (*stop)(LiftMotor* self);
+    void (*stop)(Relay* self);
+
+// private:
+    const relay_cfg_t* _cfg_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-LiftMotor lift_motor_create(void);
+Relay relay_create(void);
 
 #endif
