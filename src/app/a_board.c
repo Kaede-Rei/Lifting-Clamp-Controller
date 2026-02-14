@@ -18,6 +18,7 @@ static const relay_cfg_t relay_cfg = {
 
 static const can_cfg_t can_cfg = {
     .id = CAN_1,
+    .periph = CAN1,
     .mode = CAN_MODE_NORMAL,
     .sjw = CAN_SJW_1tq,
     .bs1 = CAN_BS1_7tq,
@@ -87,7 +88,7 @@ usart_t usart2;
 tim_t tick;
 
 Encoder lift_encoder;
-Relay relay;
+Relay lift_relay;
 Gripper gripper;
 Comms comms;
 LiftControl lift_ctrl;
@@ -112,7 +113,7 @@ void a_board_init(void) {
 
     /* 创建对象 */
     lift_encoder = encoder_create();
-    relay = relay_create();
+    lift_relay = relay_create();
     gripper = gripper_create();
     comms = comms_create();
     lift_ctrl = lift_ctrl_create();
@@ -125,13 +126,13 @@ void a_board_init(void) {
 
     /* 驱动初始化 */
     lift_encoder.init(&lift_encoder, &tim_cfg_table[TIM_2], 10);
-    relay.init(&relay, &relay_cfg);
-    gripper.init(&gripper, &usart2);
+    lift_relay.init(&lift_relay, &relay_cfg);
+    // gripper.init(&gripper, &usart2);
 
     /* 服务初始化 */
     s_delay_init(systick_get_ms, systick_is_timeout, dwt_get_us, dwt_is_timeout);
     comms.init(&comms, &usart1, &lift_ctrl, &gripper);
-    lift_ctrl.init(&lift_ctrl, &lift_encoder, &relay);
+    lift_ctrl.init(&lift_ctrl, &lift_encoder, &lift_relay);
 
     s_delay_ms(1000);
     printf("Board initialized!\r\n");

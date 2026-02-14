@@ -6,6 +6,8 @@
  */
 #include "can.h"
 
+#include "s_delay.h"
+
 // ! ========================= 变 量 声 明 ========================= ! //
 
 typedef struct {
@@ -133,10 +135,12 @@ bool can_send(can_t* handle, uint16_t std_id, const uint8_t* data, uint8_t len) 
     uint8_t mbox = CAN_Transmit(hw->periph, &tx);
     if(mbox == CAN_TxStatus_NoMailBox) return false;
 
-    uint32_t timeout = 0;
+    ms_t start = 0;
     while(CAN_TransmitStatus(hw->periph, mbox) != CAN_TxStatus_Ok) {
-        if(++timeout > 0xFFFF) return false;
+        if(s_nb_delay_ms(&start, 50)) return false;
     }
+
+    s_delay_ms(1);
     return true;
 }
 

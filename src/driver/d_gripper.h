@@ -1,13 +1,13 @@
 /**
  * @file  d_gripper.h
- * @brief 夹爪驱动
- *        通过 USART 向舵机发送 PWM 指令
+ * @brief 二指夹爪驱动
  */
 #ifndef _d_gripper_h_
 #define _d_gripper_h_
 
 #include "stm32f10x.h"
-#include "usart.h"
+#include "can.h"
+
 #include <stdint.h>
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
@@ -18,10 +18,22 @@ struct Gripper {
     /**
      * @brief   初始化夹爪
      * @param   self 夹爪对象
-     * @param   uart 串口句柄
+     * @param   can_cfg CAN配置对象
+     * @param   motor_id 电机ID
      * @retval  None
      */
-    void(*init)(Gripper* self, usart_t* uart);
+    void(*init)(Gripper* self, can_cfg_t* can_cfg, uint16_t motor_id);
+    /**
+     * @brief   使能夹爪
+     * @param   self 夹爪对象
+     * @retval  None
+     */
+    void(*enable)(Gripper* self);
+    /**
+     * @brief   失能夹爪
+     * @param   self 夹爪对象
+     */
+    void(*disable)(Gripper* self);
     /**
      * @brief   打开夹爪
      * @param   self 夹爪对象
@@ -35,15 +47,16 @@ struct Gripper {
      */
     void(*close)(Gripper* self);
     /**
-     * @brief   设置夹爪位置
+     * @brief   设置夹爪角度
      * @param   self 夹爪对象
-     * @param   pulse 脉宽
+     * @param   angle 角度
      * @retval  None
      */
-    void(*set_pos)(Gripper* self, uint16_t pulse);
+    void(*set_angle)(Gripper* self, float angle);
 
 // private:
-    usart_t* _uart_;
+    can_t* _can_;
+    uint16_t _motor_id_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //

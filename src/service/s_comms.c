@@ -60,12 +60,12 @@ static void _process_string_cmd(Comms* self, char* frame) {
             param++;
         }
 
-        if(strcmp(cmd, "OPEN") == 0)
-            self->_grip_->open(self->_grip_);
-        else if(strcmp(cmd, "CLOSE") == 0)
-            self->_grip_->close(self->_grip_);
-        else if(strcmp(cmd, "POS") == 0 && param)
-            self->_grip_->set_pos(self->_grip_, (uint16_t)atoi(param));
+        // if(strcmp(cmd, "OPEN") == 0)
+        //     self->_grip_->open(self->_grip_);
+        // else if(strcmp(cmd, "CLOSE") == 0)
+        //     self->_grip_->close(self->_grip_);
+        // else if(strcmp(cmd, "POS") == 0 && param)
+        //     self->_grip_->set_angle(self->_grip_, (float)atof(param));
     }
 }
 

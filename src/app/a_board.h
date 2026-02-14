@@ -27,7 +27,7 @@ extern usart_t usart2;
 extern tim_t tick;
 
 extern Encoder lift_encoder;
-extern Relay relay;
+extern Relay lift_relay;
 extern Gripper gripper;
 extern Comms comms;
 extern LiftControl lift_ctrl;

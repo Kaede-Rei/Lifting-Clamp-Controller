@@ -37,6 +37,7 @@ typedef enum {
  */
 typedef struct {
     can_id_e id;                // CAN ID
+    CAN_TypeDef* periph;        // CAN 外设
     can_mode_e mode;            // 工作模式
     uint8_t sjw;                // CAN_SJW_xtq
     uint8_t bs1;                // CAN_BS1_xtq
