@@ -15,22 +15,29 @@ typedef void (*TimerCb)(void);
 
 typedef struct Timer Timer;
 struct Timer {
-    /* public methods */
+// public:
+    /**
+     * @brief   初始化定时器
+     * @param   self 定时器对象
+     * @retval  None
+     */
     void (*init)(Timer* self);
+    /**
+     * @brief   设置回调函数
+     * @param   self 定时器对象
+     * @param   cb 回调函数
+     * @retval  None
+     */
     void (*set_callback)(Timer* self, TimerCb cb);
-    /* public data (ISR 置位, 主循环清零) */
+
     volatile uint8_t flag_;
-    /* private data */
-    TimerCb callback_;
+
+// private:
+    TimerCb _callback_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 Timer 对象
- * @param   None
- * @retval  Timer 对象
- */
 Timer timer_create(void);
 
 #endif

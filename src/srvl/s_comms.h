@@ -17,25 +17,34 @@
 
 typedef struct Comms Comms;
 struct Comms {
-    /* public methods */
+// public:
+    /**
+     * @brief   初始化通信模块
+     * @param   self 通信对象
+     * @param   uart 串口对象
+     * @param   lift 升降机对象
+     * @param   grip 夹爪对象
+     * @retval  None
+     */
     void (*init)(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip);
+    /**
+     * @brief   通信处理循环
+     * @param   self 通信对象
+     * @retval  None
+     */
     void (*process)(Comms* self);
-    /* private data */
-    Usart* uart_;
-    LiftControl* lift_;
-    Gripper* grip_;
-    char         cmd_buf_[COMMS_CMD_BUF_SIZE];
-    uint8_t      cmd_idx_;
-    uint8_t      parsing_;
+
+// private:
+    Usart* _uart_;
+    LiftControl* _lift_;
+    Gripper* _grip_;
+    char _cmd_buf_[COMMS_CMD_BUF_SIZE];
+    uint8_t _cmd_idx_;
+    uint8_t _parsing_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 Comms 对象
- * @param   None
- * @retval  Comms 对象
- */
 Comms comms_create(void);
 
 #endif

@@ -24,8 +24,8 @@ static void _set_rx_cb(Can* self, CanRxCb cb);
  */
 Can can_create(CanMode_e mode) {
     Can obj;
-    obj.mode_ = mode;
-    obj.rx_cb_ = 0;
+    obj._mode_ = mode;
+    obj._rx_cb_ = 0;
     obj.init = _init;
     obj.send = _send;
     obj.set_rx_cb = _set_rx_cb;
@@ -41,8 +41,8 @@ void USB_LP_CAN1_RX0_IRQHandler(void) {
     if(CAN_GetITStatus(CAN1, CAN_IT_FMP0) != RESET) {
         CanRxMsg rx;
         CAN_Receive(CAN1, CAN_FIFO0, &rx);
-        if(_instance && _instance->rx_cb_) {
-            _instance->rx_cb_(&rx);
+        if(_instance && _instance->_rx_cb_) {
+            _instance->_rx_cb_(&rx);
         }
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
     }
@@ -80,7 +80,7 @@ static void _init(Can* self) {
     ci.CAN_RFLM = DISABLE;
     ci.CAN_TXFP = DISABLE;
 
-    switch(self->mode_) {
+    switch(self->_mode_) {
         case CanModeNormal_e:         ci.CAN_Mode = CAN_Mode_Normal;          break;
         case CanModeLoopback_e:       ci.CAN_Mode = CAN_Mode_LoopBack;        break;
         case CanModeSilent_e:         ci.CAN_Mode = CAN_Mode_Silent;          break;
@@ -156,5 +156,5 @@ static bool _send(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len) 
  * @retval  None
  */
 static void _set_rx_cb(Can* self, CanRxCb cb) {
-    self->rx_cb_ = cb;
+    self->_rx_cb_ = cb;
 }

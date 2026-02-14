@@ -18,19 +18,30 @@ typedef enum {
 
 typedef struct LiftMotor LiftMotor;
 struct LiftMotor {
-    /* public methods */
+// public:
+    /**
+     * @brief   初始化电机
+     * @param   self 电机对象
+     * @retval  None
+     */
     void (*init)(LiftMotor* self);
+    /**
+     * @brief   设置电机方向
+     * @param   self 电机对象
+     * @param   dir 方向
+     * @retval  None
+     */
     void (*set_dir)(LiftMotor* self, LiftDir_e dir);
+    /**
+     * @brief   停止电机
+     * @param   self 电机对象
+     * @retval  None
+     */
     void (*stop)(LiftMotor* self);
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 LiftMotor 对象
- * @param   None
- * @retval  LiftMotor 对象
- */
 LiftMotor lift_motor_create(void);
 
 #endif

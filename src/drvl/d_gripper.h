@@ -14,22 +14,40 @@
 
 typedef struct Gripper Gripper;
 struct Gripper {
-    /* public methods */
-    void (*init)(Gripper* self, Usart* uart);
-    void (*open)(Gripper* self);
-    void (*close)(Gripper* self);
-    void (*set_pos)(Gripper* self, uint16_t pulse);
-    /* private data */
-    Usart* uart_;
+// public:
+    /**
+     * @brief   初始化夹爪
+     * @param   self 夹爪对象
+     * @param   uart 串口对象
+     * @retval  None
+     */
+    void(*init)(Gripper* self, Usart* uart);
+    /**
+     * @brief   打开夹爪
+     * @param   self 夹爪对象
+     * @retval  None
+     */
+    void(*open)(Gripper* self);
+    /**
+     * @brief   关闭夹爪
+     * @param   self 夹爪对象
+     * @retval  None
+     */
+    void(*close)(Gripper* self);
+    /**
+     * @brief   设置夹爪位置
+     * @param   self 夹爪对象
+     * @param   pulse 脉宽
+     * @retval  None
+     */
+    void(*set_pos)(Gripper* self, uint16_t pulse);
+
+// private:
+    Usart* _uart_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 Gripper 对象
- * @param   None
- * @retval  Gripper 对象
- */
 Gripper gripper_create(void);
 
 #endif

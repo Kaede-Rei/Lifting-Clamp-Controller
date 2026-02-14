@@ -30,7 +30,7 @@ static void _set_pos(Gripper* self, uint16_t pulse);
  */
 Gripper gripper_create(void) {
     Gripper obj;
-    obj.uart_ = 0;
+    obj._uart_ = 0;
     obj.init = _init;
     obj.open = _open;
     obj.close = _close;
@@ -50,7 +50,7 @@ Gripper gripper_create(void) {
 static void _send_servo_cmd(Gripper* self, uint16_t pulse, uint16_t time_ms) {
     char buf[32];
     sprintf(buf, "#000P%04dT%04d!", pulse, time_ms);
-    self->uart_->send_string(self->uart_, buf);
+    self->_uart_->send_string(self->_uart_, buf);
 }
 
 /**
@@ -60,7 +60,7 @@ static void _send_servo_cmd(Gripper* self, uint16_t pulse, uint16_t time_ms) {
  * @retval  None
  */
 static void _init(Gripper* self, Usart* uart) {
-    self->uart_ = uart;
+    self->_uart_ = uart;
 }
 
 /**

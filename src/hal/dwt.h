@@ -37,26 +37,8 @@ typedef struct {
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   初始化 DWT
- * @param   None
- * @retval  None
- */
-void     dwt_init(void);
-
-/**
- * @brief   获取系统运行微秒数
- * @param   None
- * @retval  uint32_t 微秒数
- */
+void dwt_init(void);
 uint32_t dwt_get_us(void);
-
-/**
- * @brief   检查是否超时 (微秒)
- * @param   start 起始时间
- * @param   timeout_us 超时时间
- * @retval  uint8_t 1:超时, 0:未超时
- */
-uint8_t  dwt_is_timeout(uint32_t start, uint32_t timeout_us);
+uint8_t dwt_is_timeout(uint32_t start, uint32_t timeout_us);
 
 #endif

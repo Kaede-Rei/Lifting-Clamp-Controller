@@ -10,10 +10,10 @@
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
-static void  _init(Pid* self);
-static void  _set_pid(Pid* self, float p, float i, float d);
-static void  _set_limit(Pid* self, float int_limit, float out_limit);
-static void  _set_filter(Pid* self, float alpha, float int_threshold, float dead_zone);
+static void _init(Pid* self);
+static void _set_pid(Pid* self, float p, float i, float d);
+static void _set_limit(Pid* self, float int_limit, float out_limit);
+static void _set_filter(Pid* self, float alpha, float int_threshold, float dead_zone);
 static float _calculate(Pid* self, float target, float actual, float dt_s);
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
@@ -25,16 +25,16 @@ static float _calculate(Pid* self, float target, float actual, float dt_s);
  */
 Pid pid_create(void) {
     Pid obj;
-    obj.p_ = obj.i_ = obj.d_ = 0.0f;
-    obj.output_ = 0.0f;
-    obj.integral_ = 0.0f;
-    obj.last_actual_ = 0.0f;
-    obj.last_diff_ = 0.0f;
-    obj.alpha_ = 1.0f;
-    obj.int_limit_ = 0.0f;
-    obj.out_limit_ = 0.0f;
-    obj.int_threshold_ = 0.0f;
-    obj.dead_zone_ = 0.0f;
+    obj._p_ = obj._i_ = obj._d_ = 0.0f;
+    obj._output_ = 0.0f;
+    obj._integral_ = 0.0f;
+    obj._last_actual_ = 0.0f;
+    obj._last_diff_ = 0.0f;
+    obj._alpha_ = 1.0f;
+    obj._int_limit_ = 0.0f;
+    obj._out_limit_ = 0.0f;
+    obj._int_threshold_ = 0.0f;
+    obj._dead_zone_ = 0.0f;
     obj.init = _init;
     obj.set_pid = _set_pid;
     obj.set_limit = _set_limit;
@@ -51,18 +51,18 @@ Pid pid_create(void) {
  * @retval  None
  */
 static void _init(Pid* self) {
-    self->p_ = 0.0f;
-    self->i_ = 0.0f;
-    self->d_ = 0.0f;
-    self->output_ = 0.0f;
-    self->integral_ = 0.0f;
-    self->last_actual_ = 0.0f;
-    self->last_diff_ = 0.0f;
-    self->alpha_ = 1.0f;
-    self->int_limit_ = 0.0f;
-    self->out_limit_ = 0.0f;
-    self->int_threshold_ = 0.0f;
-    self->dead_zone_ = 0.0f;
+    self->_p_ = 0.0f;
+    self->_i_ = 0.0f;
+    self->_d_ = 0.0f;
+    self->_output_ = 0.0f;
+    self->_integral_ = 0.0f;
+    self->_last_actual_ = 0.0f;
+    self->_last_diff_ = 0.0f;
+    self->_alpha_ = 1.0f;
+    self->_int_limit_ = 0.0f;
+    self->_out_limit_ = 0.0f;
+    self->_int_threshold_ = 0.0f;
+    self->_dead_zone_ = 0.0f;
 }
 
 /**
@@ -74,9 +74,9 @@ static void _init(Pid* self) {
  * @retval  None
  */
 static void _set_pid(Pid* self, float p, float i, float d) {
-    self->p_ = p;
-    self->i_ = i;
-    self->d_ = d;
+    self->_p_ = p;
+    self->_i_ = i;
+    self->_d_ = d;
 }
 
 /**
@@ -87,8 +87,8 @@ static void _set_pid(Pid* self, float p, float i, float d) {
  * @retval  None
  */
 static void _set_limit(Pid* self, float int_limit, float out_limit) {
-    self->int_limit_ = int_limit;
-    self->out_limit_ = out_limit;
+    self->_int_limit_ = int_limit;
+    self->_out_limit_ = out_limit;
 }
 
 /**
@@ -100,9 +100,9 @@ static void _set_limit(Pid* self, float int_limit, float out_limit) {
  * @retval  None
  */
 static void _set_filter(Pid* self, float alpha, float int_threshold, float dead_zone) {
-    self->alpha_ = alpha;
-    self->int_threshold_ = int_threshold;
-    self->dead_zone_ = dead_zone;
+    self->_alpha_ = alpha;
+    self->_int_threshold_ = int_threshold;
+    self->_dead_zone_ = dead_zone;
 }
 
 /**
@@ -118,29 +118,29 @@ static float _calculate(Pid* self, float target, float actual, float dt_s) {
     else if(dt_s > 0.1f) dt_s = 0.1f;
 
     float err = target - actual;
-    if(err < self->dead_zone_ && err > -self->dead_zone_) {
-        self->output_ = 0.0f;
+    if(err < self->_dead_zone_ && err > -self->_dead_zone_) {
+        self->_output_ = 0.0f;
         return 0.0f;
     }
 
     /* 微分项 (基于测量值求导, 避免目标突变) */
-    float diff = -(actual - self->last_actual_) / dt_s;
-    self->last_actual_ = actual;
-    float filtered = self->alpha_ * diff + (1.0f - self->alpha_) * self->last_diff_;
-    self->last_diff_ = filtered;
+    float diff = -(actual - self->_last_actual_) / dt_s;
+    self->_last_actual_ = actual;
+    float filtered = self->_alpha_ * diff + (1.0f - self->_alpha_) * self->_last_diff_;
+    self->_last_diff_ = filtered;
 
     /* 积分项 */
-    self->integral_ += err * dt_s;
-    self->integral_ = CONSTRAIN(self->integral_, -self->int_limit_, self->int_limit_);
-    if(self->int_threshold_ > 0.0f) {
-        if(err > self->int_threshold_ || err < -self->int_threshold_)
-            self->integral_ = 0.0f;
+    self->_integral_ += err * dt_s;
+    self->_integral_ = CONSTRAIN(self->_integral_, -self->_int_limit_, self->_int_limit_);
+    if(self->_int_threshold_ > 0.0f) {
+        if(err > self->_int_threshold_ || err < -self->_int_threshold_)
+            self->_integral_ = 0.0f;
     }
 
     /* PID 输出 */
-    self->output_ = self->p_ * err
-        + self->i_ * self->integral_
-        + self->d_ * filtered;
-    self->output_ = CONSTRAIN(self->output_, -self->out_limit_, self->out_limit_);
-    return self->output_;
+    self->_output_ = self->_p_ * err
+        + self->_i_ * self->_integral_
+        + self->_d_ * filtered;
+    self->_output_ = CONSTRAIN(self->_output_, -self->_out_limit_, self->_out_limit_);
+    return self->_output_;
 }

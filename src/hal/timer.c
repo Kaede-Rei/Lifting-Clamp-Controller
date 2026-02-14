@@ -24,7 +24,7 @@ static void _set_callback(Timer* self, TimerCb cb);
 Timer timer_create(void) {
     Timer obj;
     obj.flag_ = 0;
-    obj.callback_ = 0;
+    obj._callback_ = 0;
     obj.init = _init;
     obj.set_callback = _set_callback;
     return obj;
@@ -39,8 +39,8 @@ void TIM3_IRQHandler(void) {
     if(TIM_GetFlagStatus(TIM3, TIM_FLAG_Update) == SET) {
         if(_instance) {
             _instance->flag_ = 1;
-            if(_instance->callback_)
-                _instance->callback_();
+            if(_instance->_callback_)
+                _instance->_callback_();
         }
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
@@ -88,5 +88,5 @@ static void _init(Timer* self) {
  * @retval  None
  */
 static void _set_callback(Timer* self, TimerCb cb) {
-    self->callback_ = cb;
+    self->_callback_ = cb;
 }

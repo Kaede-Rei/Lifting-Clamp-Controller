@@ -19,33 +19,46 @@
 
 typedef struct Usart Usart;
 struct Usart {
-    /* public methods */
-    void    (*init)(Usart* self);
-    void    (*send_byte)(Usart* self, uint8_t byte);
-    void    (*send_string)(Usart* self, const char* str);
+// public:
+    /**
+     * @brief   初始化 USART
+     * @param   self 串口对象
+     * @retval  None
+     */
+    void(*init)(Usart* self);
+    /**
+     * @brief   发送单字节
+     * @param   self 串口对象
+     * @param   byte 字节数据
+     * @retval  None
+     */
+    void(*send_byte)(Usart* self, uint8_t byte);
+    /**
+     * @brief   发送字符串
+     * @param   self 串口对象
+     * @param   str 字符串
+     * @retval  None
+     */
+    void(*send_string)(Usart* self, const char* str);
+    /**
+     * @brief   读取单字节
+     * @param   self 串口对象
+     * @param   out 输出缓冲区
+     * @retval  uint8_t 1:成功, 0:缓冲区空
+     */
     uint8_t(*read_byte)(Usart* self, uint8_t* out);
-    /* private data */
-    USART_TypeDef* periph_;
-    uint32_t       baudrate_;
-    uint8_t        rx_buf_[USART_RX_BUF_SIZE];
-    volatile uint16_t rx_head_;
-    volatile uint16_t rx_tail_;
+
+// private:
+    USART_TypeDef* _periph_;
+    uint32_t _baudrate_;
+    uint8_t  _rx_buf_[USART_RX_BUF_SIZE];
+    volatile uint16_t _rx_head_;
+    volatile uint16_t _rx_tail_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 USART1 对象
- * @param   baudrate 波特率
- * @retval  Usart 对象
- */
 Usart usart1_create(uint32_t baudrate);
-
-/**
- * @brief   创建 USART2 对象
- * @param   baudrate 波特率
- * @retval  Usart 对象
- */
 Usart usart2_create(uint32_t baudrate);
 
 #endif

@@ -10,7 +10,8 @@
 
 // ! ========================= 变 量 声 明 ========================= ! //
 
-#define POSITION_TOLERANCE  5   /* 到位误差 (mm) */
+// 到位误差 (mm)
+#define POSITION_TOLERANCE  5
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
@@ -28,12 +29,12 @@ static void _update(LiftControl* self);
  */
 LiftControl lift_ctrl_create(void) {
     LiftControl obj;
-    obj.encoder_ = 0;
-    obj.motor_ = 0;
-    obj.target_pos_ = 0;
-    obj.height_diff_ = 0.0f;
-    obj.rcvd_flag_ = 0;
-    obj.manual_dir_ = LiftDirStop_e;
+    obj._encoder_ = 0;
+    obj._motor_ = 0;
+    obj._target_pos_ = 0;
+    obj._height_diff_ = 0.0f;
+    obj._rcvd_flag_ = 0;
+    obj._manual_dir_ = LiftDirStop_e;
     obj.init = _init;
     obj.set_height = _set_height;
     obj.manual = _manual;
@@ -51,12 +52,12 @@ LiftControl lift_ctrl_create(void) {
  * @retval  None
  */
 static void _init(LiftControl* self, Encoder* enc, LiftMotor* motor) {
-    self->encoder_ = enc;
-    self->motor_ = motor;
-    self->target_pos_ = 0;
-    self->height_diff_ = 0.0f;
-    self->rcvd_flag_ = 0;
-    self->manual_dir_ = LiftDirStop_e;
+    self->_encoder_ = enc;
+    self->_motor_ = motor;
+    self->_target_pos_ = 0;
+    self->_height_diff_ = 0.0f;
+    self->_rcvd_flag_ = 0;
+    self->_manual_dir_ = LiftDirStop_e;
 }
 
 /**
@@ -66,8 +67,8 @@ static void _init(LiftControl* self, Encoder* enc, LiftMotor* motor) {
  * @retval  None
  */
 static void _set_height(LiftControl* self, float delta_mm) {
-    self->height_diff_ = delta_mm;
-    self->rcvd_flag_ = 1;
+    self->_height_diff_ = delta_mm;
+    self->_rcvd_flag_ = 1;
 }
 
 /**
@@ -77,7 +78,7 @@ static void _set_height(LiftControl* self, float delta_mm) {
  * @retval  None
  */
 static void _manual(LiftControl* self, LiftDir_e dir) {
-    self->manual_dir_ = dir;
+    self->_manual_dir_ = dir;
 }
 
 /**
@@ -87,35 +88,35 @@ static void _manual(LiftControl* self, LiftDir_e dir) {
  */
 static void _update(LiftControl* self) {
     /* 更新编码器 */
-    self->encoder_->update(self->encoder_);
-    int32_t pos = self->encoder_->get_position(self->encoder_);
+    self->_encoder_->update(self->_encoder_);
+    int32_t pos = self->_encoder_->get_position(self->_encoder_);
 
     /* 收到新的高度目标 */
-    if(self->rcvd_flag_) {
-        self->target_pos_ = pos + (int32_t)self->height_diff_;
-        self->rcvd_flag_ = 0;
+    if(self->_rcvd_flag_) {
+        self->_target_pos_ = pos + (int32_t)self->_height_diff_;
+        self->_rcvd_flag_ = 0;
     }
 
     /* 手动模式优先 */
-    if(self->manual_dir_ != LiftDirStop_e) {
-        self->motor_->set_dir(self->motor_, self->manual_dir_);
+    if(self->_manual_dir_ != LiftDirStop_e) {
+        self->_motor_->set_dir(self->_motor_, self->_manual_dir_);
         return;
     }
 
     /* 自动定位 */
-    if(self->height_diff_ != 0.0f) {
-        int32_t error = self->target_pos_ - pos;
+    if(self->_height_diff_ != 0.0f) {
+        int32_t error = self->_target_pos_ - pos;
         if(abs(error) > POSITION_TOLERANCE) {
-            self->motor_->set_dir(self->motor_,
+            self->_motor_->set_dir(self->_motor_,
                 error > 0 ? LiftDirUp_e : LiftDirDown_e);
         }
         else {
-            self->motor_->stop(self->motor_);
+            self->_motor_->stop(self->_motor_);
             printf("$LIFTER:OK#\r\n");
-            self->height_diff_ = 0.0f;
+            self->_height_diff_ = 0.0f;
         }
     }
     else {
-        self->motor_->stop(self->motor_);
+        self->_motor_->stop(self->_motor_);
     }
 }

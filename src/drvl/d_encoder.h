@@ -14,24 +14,40 @@
 
 typedef struct Encoder Encoder;
 struct Encoder {
-    /* public methods */
-    void    (*init)(Encoder* self);
-    void    (*update)(Encoder* self);
+// public:
+    /**
+     * @brief   初始化编码器
+     * @param   self 编码器对象
+     * @retval  None
+     */
+    void(*init)(Encoder* self);
+    /**
+     * @brief   更新编码器数据
+     * @param   self 编码器对象
+     * @retval  None
+     */
+    void(*update)(Encoder* self);
+    /**
+     * @brief   获取位置
+     * @param   self 编码器对象
+     * @retval  int32_t 位置(mm)
+     */
     int32_t(*get_position)(const Encoder* self);
+    /**
+     * @brief   获取速度
+     * @param   self 编码器对象
+     * @retval  int32_t 速度(mm/s)
+     */
     int32_t(*get_speed)(const Encoder* self);
-    /* private data */
-    int32_t total_pulses_;
-    int32_t position_mm_;
-    int32_t speed_;
+
+// private:
+    int32_t _total_pulses_;
+    int32_t _position_mm_;
+    int32_t _speed_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 Encoder 对象
- * @param   None
- * @retval  Encoder 对象
- */
 Encoder encoder_create(void);
 
 #endif

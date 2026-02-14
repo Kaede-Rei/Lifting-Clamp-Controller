@@ -13,11 +13,11 @@ static Usart* _usart1_inst = 0;
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
-static void    _send_byte(Usart* self, uint8_t byte);
-static void    _send_string(Usart* self, const char* str);
+static void _send_byte(Usart* self, uint8_t byte);
+static void _send_string(Usart* self, const char* str);
 static uint8_t _read_byte(Usart* self, uint8_t* out);
-static void    _usart1_init(Usart* self);
-static void    _usart2_init(Usart* self);
+static void _usart1_init(Usart* self);
+static void _usart2_init(Usart* self);
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
 
@@ -28,10 +28,10 @@ static void    _usart2_init(Usart* self);
  */
 Usart usart1_create(uint32_t baudrate) {
     Usart obj;
-    obj.periph_ = USART1;
-    obj.baudrate_ = baudrate;
-    obj.rx_head_ = 0;
-    obj.rx_tail_ = 0;
+    obj._periph_ = USART1;
+    obj._baudrate_ = baudrate;
+    obj._rx_head_ = 0;
+    obj._rx_tail_ = 0;
     obj.init = _usart1_init;
     obj.send_byte = _send_byte;
     obj.send_string = _send_string;
@@ -46,10 +46,10 @@ Usart usart1_create(uint32_t baudrate) {
  */
 Usart usart2_create(uint32_t baudrate) {
     Usart obj;
-    obj.periph_ = USART2;
-    obj.baudrate_ = baudrate;
-    obj.rx_head_ = 0;
-    obj.rx_tail_ = 0;
+    obj._periph_ = USART2;
+    obj._baudrate_ = baudrate;
+    obj._rx_head_ = 0;
+    obj._rx_tail_ = 0;
     obj.init = _usart2_init;
     obj.send_byte = _send_byte;
     obj.send_string = _send_string;
@@ -66,10 +66,10 @@ void USART1_IRQHandler(void) {
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
         uint8_t data = (uint8_t)USART_ReceiveData(USART1);
         if(_usart1_inst) {
-            uint16_t next = (_usart1_inst->rx_head_ + 1) % USART_RX_BUF_SIZE;
-            if(next != _usart1_inst->rx_tail_) {
-                _usart1_inst->rx_buf_[_usart1_inst->rx_head_] = data;
-                _usart1_inst->rx_head_ = next;
+            uint16_t next = (_usart1_inst->_rx_head_ + 1) % USART_RX_BUF_SIZE;
+            if(next != _usart1_inst->_rx_tail_) {
+                _usart1_inst->_rx_buf_[_usart1_inst->_rx_head_] = data;
+                _usart1_inst->_rx_head_ = next;
             }
         }
         USART_ClearITPendingBit(USART1, USART_IT_RXNE);
@@ -101,8 +101,8 @@ int fputc(int ch, FILE* f) {
  * @retval  None
  */
 static void _send_byte(Usart* self, uint8_t byte) {
-    while(USART_GetFlagStatus(self->periph_, USART_FLAG_TC) == RESET);
-    USART_SendData(self->periph_, byte);
+    while(USART_GetFlagStatus(self->_periph_, USART_FLAG_TC) == RESET);
+    USART_SendData(self->_periph_, byte);
 }
 
 /**
@@ -124,9 +124,9 @@ static void _send_string(Usart* self, const char* str) {
  * @retval  uint8_t 1:成功, 0:缓冲区空
  */
 static uint8_t _read_byte(Usart* self, uint8_t* out) {
-    if(self->rx_head_ == self->rx_tail_) return 0;
-    *out = self->rx_buf_[self->rx_tail_];
-    self->rx_tail_ = (self->rx_tail_ + 1) % USART_RX_BUF_SIZE;
+    if(self->_rx_head_ == self->_rx_tail_) return 0;
+    *out = self->_rx_buf_[self->_rx_tail_];
+    self->_rx_tail_ = (self->_rx_tail_ + 1) % USART_RX_BUF_SIZE;
     return 1;
 }
 
@@ -137,8 +137,8 @@ static uint8_t _read_byte(Usart* self, uint8_t* out) {
  */
 static void _usart1_init(Usart* self) {
     _usart1_inst = self;
-    self->rx_head_ = 0;
-    self->rx_tail_ = 0;
+    self->_rx_head_ = 0;
+    self->_rx_tail_ = 0;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
     USART_DeInit(USART1);
@@ -153,7 +153,7 @@ static void _usart1_init(Usart* self) {
     GPIO_Init(GPIOA, &gpio);
 
     USART_InitTypeDef ui;
-    ui.USART_BaudRate = self->baudrate_;
+    ui.USART_BaudRate = self->_baudrate_;
     ui.USART_WordLength = USART_WordLength_8b;
     ui.USART_StopBits = USART_StopBits_1;
     ui.USART_Parity = USART_Parity_No;
@@ -178,8 +178,8 @@ static void _usart1_init(Usart* self) {
  * @retval  None
  */
 static void _usart2_init(Usart* self) {
-    self->rx_head_ = 0;
-    self->rx_tail_ = 0;
+    self->_rx_head_ = 0;
+    self->_rx_tail_ = 0;
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -194,7 +194,7 @@ static void _usart2_init(Usart* self) {
     GPIO_Init(GPIOA, &gpio);
 
     USART_InitTypeDef ui;
-    ui.USART_BaudRate = self->baudrate_;
+    ui.USART_BaudRate = self->_baudrate_;
     ui.USART_WordLength = USART_WordLength_8b;
     ui.USART_StopBits = USART_StopBits_1;
     ui.USART_Parity = USART_Parity_No;

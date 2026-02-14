@@ -23,22 +23,37 @@ typedef void (*CanRxCb)(CanRxMsg* msg);
 
 typedef struct Can Can;
 struct Can {
-    /* public methods */
-    void    (*init)(Can* self);
-    bool    (*send)(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len);
-    void    (*set_rx_cb)(Can* self, CanRxCb cb);
-    /* private data */
-    CanMode_e mode_;
-    CanRxCb   rx_cb_;
+// public:
+    /**
+     * @brief   初始化 CAN
+     * @param   self CAN对象
+     * @retval  None
+     */
+    void (*init)(Can* self);
+    /**
+     * @brief   发送 CAN 报文
+     * @param   self CAN对象
+     * @param   std_id 标准ID
+     * @param   data 数据指针
+     * @param   len 数据长度
+     * @retval  bool 是否发送成功
+     */
+    bool (*send)(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len);
+    /**
+     * @brief   设置接收回调
+     * @param   self CAN对象
+     * @param   cb 回调函数
+     * @retval  None
+     */
+    void (*set_rx_cb)(Can* self, CanRxCb cb);
+
+// private:
+    CanMode_e _mode_;
+    CanRxCb _rx_cb_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-/**
- * @brief   创建 Can 对象
- * @param   mode CAN模式
- * @retval  Can 对象
- */
 Can can_create(CanMode_e mode);
 
 #endif

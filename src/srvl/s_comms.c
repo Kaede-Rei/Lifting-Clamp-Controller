@@ -29,11 +29,11 @@ static void _process(Comms* self);
  */
 Comms comms_create(void) {
     Comms obj;
-    obj.uart_ = 0;
-    obj.lift_ = 0;
-    obj.grip_ = 0;
-    obj.cmd_idx_ = 0;
-    obj.parsing_ = 0;
+    obj._uart_ = 0;
+    obj._lift_ = 0;
+    obj._grip_ = 0;
+    obj._cmd_idx_ = 0;
+    obj._parsing_ = 0;
     obj.init = _init;
     obj.process = _process;
     return obj;
@@ -50,7 +50,7 @@ Comms comms_create(void) {
 static void _process_string_cmd(Comms* self, char* frame) {
     if(strncmp(frame, "LIFTER:", 7) == 0) {
         float val = (float)atof(frame + 7);
-        self->lift_->set_height(self->lift_, val);
+        self->_lift_->set_height(self->_lift_, val);
     }
     else if(strncmp(frame, "GRIPPER:", 8) == 0) {
         char* cmd = frame + 8;
@@ -61,11 +61,11 @@ static void _process_string_cmd(Comms* self, char* frame) {
         }
 
         if(strcmp(cmd, "OPEN") == 0)
-            self->grip_->open(self->grip_);
+            self->_grip_->open(self->_grip_);
         else if(strcmp(cmd, "CLOSE") == 0)
-            self->grip_->close(self->grip_);
+            self->_grip_->close(self->_grip_);
         else if(strcmp(cmd, "POS") == 0 && param)
-            self->grip_->set_pos(self->grip_, (uint16_t)atoi(param));
+            self->_grip_->set_pos(self->_grip_, (uint16_t)atoi(param));
     }
 }
 
@@ -78,11 +78,11 @@ static void _process_string_cmd(Comms* self, char* frame) {
  * @retval  None
  */
 static void _init(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip) {
-    self->uart_ = uart;
-    self->lift_ = lift;
-    self->grip_ = grip;
-    self->cmd_idx_ = 0;
-    self->parsing_ = 0;
+    self->_uart_ = uart;
+    self->_lift_ = lift;
+    self->_grip_ = grip;
+    self->_cmd_idx_ = 0;
+    self->_parsing_ = 0;
 }
 
 /**
@@ -93,44 +93,44 @@ static void _init(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip) {
 static void _process(Comms* self) {
     uint8_t byte;
 
-    while(self->uart_->read_byte(self->uart_, &byte)) {
+    while(self->_uart_->read_byte(self->_uart_, &byte)) {
 
         /* 单字节电机指令 (仅在非字符串解析状态下有效) */
-        if(!self->parsing_) {
+        if(!self->_parsing_) {
             if(byte == 0x01) {
-                self->lift_->manual(self->lift_, LiftDirUp_e);
+                self->_lift_->manual(self->_lift_, LiftDirUp_e);
                 continue;
             }
             else if(byte == 0x02) {
-                self->lift_->manual(self->lift_, LiftDirDown_e);
+                self->_lift_->manual(self->_lift_, LiftDirDown_e);
                 continue;
             }
             else if(byte == 0x00) {
-                self->lift_->manual(self->lift_, LiftDirStop_e);
+                self->_lift_->manual(self->_lift_, LiftDirStop_e);
                 continue;
             }
         }
 
         /* 字符串帧起始 */
         if(byte == '$') {
-            self->parsing_ = 1;
-            self->cmd_idx_ = 0;
-            memset(self->cmd_buf_, 0, sizeof(self->cmd_buf_));
+            self->_parsing_ = 1;
+            self->_cmd_idx_ = 0;
+            memset(self->_cmd_buf_, 0, sizeof(self->_cmd_buf_));
             continue;
         }
 
         /* 字符串帧解析中 */
-        if(self->parsing_) {
+        if(self->_parsing_) {
             if(byte == '#') {
-                self->cmd_buf_[self->cmd_idx_] = '\0';
-                _process_string_cmd(self, self->cmd_buf_);
-                self->parsing_ = 0;
+                self->_cmd_buf_[self->_cmd_idx_] = '\0';
+                _process_string_cmd(self, self->_cmd_buf_);
+                self->_parsing_ = 0;
             }
             else {
-                if(self->cmd_idx_ < COMMS_CMD_BUF_SIZE - 1)
-                    self->cmd_buf_[self->cmd_idx_++] = (char)byte;
+                if(self->_cmd_idx_ < COMMS_CMD_BUF_SIZE - 1)
+                    self->_cmd_buf_[self->_cmd_idx_++] = (char)byte;
                 else
-                    self->parsing_ = 0;     /* 溢出, 丢弃 */
+                    self->_parsing_ = 0;     /* 溢出, 丢弃 */
             }
         }
     }
