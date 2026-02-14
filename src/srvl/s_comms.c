@@ -17,7 +17,7 @@
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
 static void _process_string_cmd(Comms* self, char* frame);
-static void _init(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip);
+static void _init(Comms* self, usart_t* uart, LiftControl* lift, Gripper* grip);
 static void _process(Comms* self);
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
@@ -77,7 +77,7 @@ static void _process_string_cmd(Comms* self, char* frame) {
  * @param   grip 夹爪对象
  * @retval  None
  */
-static void _init(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip) {
+static void _init(Comms* self, usart_t* uart, LiftControl* lift, Gripper* grip) {
     self->_uart_ = uart;
     self->_lift_ = lift;
     self->_grip_ = grip;
@@ -93,7 +93,7 @@ static void _init(Comms* self, Usart* uart, LiftControl* lift, Gripper* grip) {
 static void _process(Comms* self) {
     uint8_t byte;
 
-    while(self->_uart_->read_byte(self->_uart_, &byte)) {
+    while(usart_read_byte(self->_uart_, &byte)) {
 
         /* 单字节电机指令 (仅在非字符串解析状态下有效) */
         if(!self->_parsing_) {

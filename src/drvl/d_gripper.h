@@ -1,7 +1,7 @@
 /**
  * @file  d_gripper.h
  * @brief 夹爪驱动 (OOP 封装)
- *        通过 USART2 向舵机发送 PWM 指令
+ *        通过 USART 向舵机发送 PWM 指令
  */
 #ifndef _d_gripper_h_
 #define _d_gripper_h_
@@ -18,10 +18,10 @@ struct Gripper {
     /**
      * @brief   初始化夹爪
      * @param   self 夹爪对象
-     * @param   uart 串口对象
+     * @param   uart 串口句柄
      * @retval  None
      */
-    void(*init)(Gripper* self, Usart* uart);
+    void(*init)(Gripper* self, usart_t* uart);
     /**
      * @brief   打开夹爪
      * @param   self 夹爪对象
@@ -43,7 +43,7 @@ struct Gripper {
     void(*set_pos)(Gripper* self, uint16_t pulse);
 
 // private:
-    Usart* _uart_;
+    usart_t* _uart_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //

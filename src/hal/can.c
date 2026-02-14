@@ -1,75 +1,75 @@
 /**
  * @file  can.c
- * @brief CAN1 外设驱动实现
- *        PA11-RX  PA12-TX  1 Mbps Classic
+ * @brief CAN HAL 实现 — 配置表驱动
+ *        根据 can_cfg_t 自动适配 CAN
+ *        默认引脚: PA12-TX  PA11-RX
  */
 #include "can.h"
 
 // ! ========================= 变 量 声 明 ========================= ! //
 
-static Can* _instance = 0;
+typedef struct {
+    CAN_TypeDef* periph;
+    uint32_t rcc_can;
+    uint32_t rcc_gpio;
+    GPIO_TypeDef* tx_port;
+    uint16_t tx_pin;
+    GPIO_TypeDef* rx_port;
+    uint16_t rx_pin;
+    uint8_t irqn;
+} can_hw_t;
+
+static const can_hw_t _hw[CAN_COUNT] = {
+    [CAN_1] = {.periph = CAN1,
+            .rcc_can = RCC_APB1Periph_CAN1,
+            .rcc_gpio = RCC_APB2Periph_GPIOA,
+            .tx_port = GPIOA,
+            .tx_pin = GPIO_Pin_12,
+            .rx_port = GPIOA,
+            .rx_pin = GPIO_Pin_11,
+            .irqn = USB_LP_CAN1_RX0_IRQn },
+};
+
+static can_t* _handles[CAN_COUNT] = { 0 };
+
+static const uint8_t _mode_map[] = {
+    [CAN_MODE_NORMAL] = CAN_Mode_Normal,
+    [CAN_MODE_LOOPBACK] = CAN_Mode_LoopBack,
+    [CAN_MODE_SILENT] = CAN_Mode_Silent,
+    [CAN_MODE_SILENT_LOOPBACK] = CAN_Mode_Silent_LoopBack,
+};
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
-static void _init(Can* self);
-static bool _send(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len);
-static void _set_rx_cb(Can* self, CanRxCb cb);
+
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
 
 /**
- * @brief   创建 Can 对象
- * @param   mode CAN模式
- * @retval  Can 对象
+ * @brief   初始化 CAN (依据配置表)
+ * @param   handle 句柄
+ * @param   cfg 配置表
  */
-Can can_create(CanMode_e mode) {
-    Can obj;
-    obj._mode_ = mode;
-    obj._rx_cb_ = 0;
-    obj.init = _init;
-    obj.send = _send;
-    obj.set_rx_cb = _set_rx_cb;
-    return obj;
-}
+void can_init(can_t* handle, const can_cfg_t* cfg) {
+    handle->cfg = cfg;
+    handle->rx_cb = 0;
 
-/**
- * @brief   CAN1 接收中断服务
- * @param   None
- * @retval  None
- */
-void USB_LP_CAN1_RX0_IRQHandler(void) {
-    if(CAN_GetITStatus(CAN1, CAN_IT_FMP0) != RESET) {
-        CanRxMsg rx;
-        CAN_Receive(CAN1, CAN_FIFO0, &rx);
-        if(_instance && _instance->_rx_cb_) {
-            _instance->_rx_cb_(&rx);
-        }
-        CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-    }
-}
+    can_id_e id = cfg->id;
+    const can_hw_t* hw = &_hw[id];
+    _handles[id] = handle;
 
-// ! ========================= 私 有 函 数 实 现 ========================= ! //
-
-/**
- * @brief   初始化 CAN
- * @param   self CAN对象
- * @retval  None
- */
-static void _init(Can* self) {
-    _instance = self;
-
-    /* GPIO: PA12=TX(AF_PP), PA11=RX(IPU) */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+    /* GPIO */
+    RCC_APB2PeriphClockCmd(hw->rcc_gpio, ENABLE);
+    RCC_APB1PeriphClockCmd(hw->rcc_can, ENABLE);
 
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_50MHz;
-    gpio.GPIO_Pin = GPIO_Pin_12;
+    gpio.GPIO_Pin = hw->tx_pin;
     gpio.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_Init(GPIOA, &gpio);
-    gpio.GPIO_Pin = GPIO_Pin_11;
+    GPIO_Init(hw->tx_port, &gpio);
+    gpio.GPIO_Pin = hw->rx_pin;
     gpio.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOA, &gpio);
+    GPIO_Init(hw->rx_port, &gpio);
 
     /* CAN 基本配置 */
     CAN_InitTypeDef ci;
@@ -79,21 +79,12 @@ static void _init(Can* self) {
     ci.CAN_NART = DISABLE;
     ci.CAN_RFLM = DISABLE;
     ci.CAN_TXFP = DISABLE;
-
-    switch(self->_mode_) {
-        case CanModeNormal_e:         ci.CAN_Mode = CAN_Mode_Normal;          break;
-        case CanModeLoopback_e:       ci.CAN_Mode = CAN_Mode_LoopBack;        break;
-        case CanModeSilent_e:         ci.CAN_Mode = CAN_Mode_Silent;          break;
-        case CanModeSilentLoopback_e: ci.CAN_Mode = CAN_Mode_Silent_LoopBack; break;
-    }
-
-    /* 1 Mbps: APB1=36 MHz, Prescaler=4, BS1=7tq, BS2=1tq
-     * Baud = 36 MHz / (4 * (1 + 7 + 1)) = 1 MHz */
-    ci.CAN_SJW = CAN_SJW_1tq;
-    ci.CAN_BS1 = CAN_BS1_7tq;
-    ci.CAN_BS2 = CAN_BS2_1tq;
-    ci.CAN_Prescaler = 4;
-    CAN_Init(CAN1, &ci);
+    ci.CAN_Mode = _mode_map[cfg->mode];
+    ci.CAN_SJW = cfg->sjw;
+    ci.CAN_BS1 = cfg->bs1;
+    ci.CAN_BS2 = cfg->bs2;
+    ci.CAN_Prescaler = cfg->prescaler;
+    CAN_Init(hw->periph, &ci);
 
     /* 滤波器: 全部接收 */
     CAN_FilterInitTypeDef fi;
@@ -110,25 +101,25 @@ static void _init(Can* self) {
 
     /* RX0 中断 */
     NVIC_InitTypeDef ni;
-    ni.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;
-    ni.NVIC_IRQChannelPreemptionPriority = 1;
-    ni.NVIC_IRQChannelSubPriority = 0;
+    ni.NVIC_IRQChannel = hw->irqn;
+    ni.NVIC_IRQChannelPreemptionPriority = cfg->nvic_preempt;
+    ni.NVIC_IRQChannelSubPriority = cfg->nvic_sub;
     ni.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&ni);
-    CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+    CAN_ITConfig(hw->periph, CAN_IT_FMP0, ENABLE);
 }
 
 /**
  * @brief   发送 CAN 报文
- * @param   self CAN对象
+ * @param   handle 句柄
  * @param   std_id 标准ID
- * @param   data 数据指针
- * @param   len 数据长度
- * @retval  bool 是否发送成功
+ * @param   data   数据指针
+ * @param   len    数据长度 (0~8)
+ * @retval  true: 成功, false: 失败
  */
-static bool _send(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len) {
-    (void)self;
+bool can_send(can_t* handle, uint16_t std_id, const uint8_t* data, uint8_t len) {
     if(len > 8) return false;
+    const can_hw_t* hw = &_hw[handle->cfg->id];
 
     CanTxMsg tx;
     tx.StdId = std_id & 0x7FF;
@@ -139,11 +130,11 @@ static bool _send(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len) 
     for(uint8_t i = 0; i < len; ++i)
         tx.Data[i] = data[i];
 
-    uint8_t mbox = CAN_Transmit(CAN1, &tx);
+    uint8_t mbox = CAN_Transmit(hw->periph, &tx);
     if(mbox == CAN_TxStatus_NoMailBox) return false;
 
     uint32_t timeout = 0;
-    while(CAN_TransmitStatus(CAN1, mbox) != CAN_TxStatus_Ok) {
+    while(CAN_TransmitStatus(hw->periph, mbox) != CAN_TxStatus_Ok) {
         if(++timeout > 0xFFFF) return false;
     }
     return true;
@@ -151,10 +142,26 @@ static bool _send(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len) 
 
 /**
  * @brief   设置接收回调
- * @param   self CAN对象
+ * @param   handle 句柄
  * @param   cb 回调函数
- * @retval  None
  */
-static void _set_rx_cb(Can* self, CanRxCb cb) {
-    self->_rx_cb_ = cb;
+void can_set_rx_cb(can_t* handle, can_rx_cb_t cb) {
+    handle->rx_cb = cb;
+}
+
+// ! ========================= 私 有 函 数 实 现 ========================= ! //
+
+/**
+ * @brief   CAN1 RX0 中断服务函数
+ * @note    由 USB_LP_CAN1_RX0_IRQHandler 调用
+ */
+void USB_LP_CAN1_RX0_IRQHandler(void) {
+    can_t* handle = _handles[CAN_1];
+    if(!handle) return;
+    if(CAN_GetITStatus(CAN1, CAN_IT_FMP0) != RESET) {
+        CanRxMsg rx;
+        CAN_Receive(CAN1, CAN_FIFO0, &rx);
+        if(handle->rx_cb) handle->rx_cb(&rx);
+        CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
+    }
 }

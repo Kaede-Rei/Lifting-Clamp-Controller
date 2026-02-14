@@ -1,7 +1,7 @@
 /**
  * @file  can.h
- * @brief CAN1 外设驱动
- *        PA11-RX  PA12-TX  1 Mbps Classic
+ * @brief CAN HAL — 配置表驱动
+ *        支持 CAN1 (STM32F103, PA11-RX  PA12-TX)
  */
 #ifndef _can_h_
 #define _can_h_
@@ -12,48 +12,52 @@
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
+typedef void(*can_rx_cb_t)(CanRxMsg* msg);
+
+/**
+ * @brief CAN ID 枚举
+ */
 typedef enum {
-    CanModeNormal_e = 0,
-    CanModeLoopback_e,
-    CanModeSilent_e,
-    CanModeSilentLoopback_e
-} CanMode_e;
+    CAN_1 = 0,
+    CAN_COUNT
+} can_id_e;
 
-typedef void (*CanRxCb)(CanRxMsg* msg);
+/**
+ * @brief CAN 工作模式
+ */
+typedef enum {
+    CAN_MODE_NORMAL = 0,
+    CAN_MODE_LOOPBACK,
+    CAN_MODE_SILENT,
+    CAN_MODE_SILENT_LOOPBACK
+} can_mode_e;
 
-typedef struct Can Can;
-struct Can {
-// public:
-    /**
-     * @brief   初始化 CAN
-     * @param   self CAN对象
-     * @retval  None
-     */
-    void (*init)(Can* self);
-    /**
-     * @brief   发送 CAN 报文
-     * @param   self CAN对象
-     * @param   std_id 标准ID
-     * @param   data 数据指针
-     * @param   len 数据长度
-     * @retval  bool 是否发送成功
-     */
-    bool (*send)(Can* self, uint16_t std_id, const uint8_t* data, uint8_t len);
-    /**
-     * @brief   设置接收回调
-     * @param   self CAN对象
-     * @param   cb 回调函数
-     * @retval  None
-     */
-    void (*set_rx_cb)(Can* self, CanRxCb cb);
+/**
+ * @brief CAN 配置表
+ */
+typedef struct {
+    can_id_e id;                // CAN ID
+    can_mode_e mode;            // 工作模式
+    uint8_t sjw;                // CAN_SJW_xtq
+    uint8_t bs1;                // CAN_BS1_xtq
+    uint8_t bs2;                // CAN_BS2_xtq
+    uint16_t prescaler;         // 分频系数
+    uint8_t nvic_preempt;       // 抢占优先级
+    uint8_t nvic_sub;           // 子优先级
+} can_cfg_t;
 
-// private:
-    CanMode_e _mode_;
-    CanRxCb _rx_cb_;
-};
+/**
+ * @brief CAN 运行时句柄
+ */
+typedef struct {
+    const can_cfg_t* cfg;
+    can_rx_cb_t rx_cb;
+} can_t;
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-Can can_create(CanMode_e mode);
+void can_init(can_t* handle, const can_cfg_t* cfg);
+bool can_send(can_t* handle, uint16_t std_id, const uint8_t* data, uint8_t len);
+void can_set_rx_cb(can_t* handle, can_rx_cb_t cb);
 
 #endif

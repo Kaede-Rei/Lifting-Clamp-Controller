@@ -21,15 +21,15 @@
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
-extern Can         can;
-extern Usart       usart1;
-extern Usart       usart2;
-extern Timer       tick;
-extern Encoder     encoder;
-extern LiftMotor   lift_motor;
-extern Gripper     gripper;
-extern Comms       comms;
-extern LiftControl lift_ctrl;
+extern can_t    can;
+extern usart_t  usart1;
+extern usart_t  usart2;
+extern tim_t    tick;
+extern Encoder      encoder;
+extern LiftMotor    lift_motor;
+extern Gripper      gripper;
+extern Comms        comms;
+extern LiftControl  lift_ctrl;
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 

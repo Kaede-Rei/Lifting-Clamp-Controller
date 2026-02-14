@@ -1,8 +1,7 @@
 /**
  * @file  usart.h
- * @brief USART 外设驱动 (OOP 封装)
- *        USART1: PA9-TX  PA10-RX  (无线串口)
- *        USART2: PA2-TX  PA3-RX   (夹爪舵机)
+ * @brief USART HAL — 配置表驱动
+ *        支持 USART1 ~ USART3 (默认引脚, 无重映射)
  */
 #ifndef _usart_h_
 #define _usart_h_
@@ -10,55 +9,48 @@
 #include "stm32f10x.h"
 #include <stdint.h>
 
+
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
-/**
- * @brief USART接收缓冲区大小定义
- */
+/// @brief USART RX 环形缓冲区大小
 #define USART_RX_BUF_SIZE  128
 
-typedef struct Usart Usart;
-struct Usart {
-// public:
-    /**
-     * @brief   初始化 USART
-     * @param   self 串口对象
-     * @retval  None
-     */
-    void(*init)(Usart* self);
-    /**
-     * @brief   发送单字节
-     * @param   self 串口对象
-     * @param   byte 字节数据
-     * @retval  None
-     */
-    void(*send_byte)(Usart* self, uint8_t byte);
-    /**
-     * @brief   发送字符串
-     * @param   self 串口对象
-     * @param   str 字符串
-     * @retval  None
-     */
-    void(*send_string)(Usart* self, const char* str);
-    /**
-     * @brief   读取单字节
-     * @param   self 串口对象
-     * @param   out 输出缓冲区
-     * @retval  uint8_t 1:成功, 0:缓冲区空
-     */
-    uint8_t(*read_byte)(Usart* self, uint8_t* out);
+/**
+ * @brief USART ID 枚举
+ */
+typedef enum {
+    USART_1 = 0,
+    USART_2,
+    USART_3,
+    USART_COUNT
+} usart_id_e;
 
-// private:
-    USART_TypeDef* _periph_;
-    uint32_t _baudrate_;
-    uint8_t  _rx_buf_[USART_RX_BUF_SIZE];
-    volatile uint16_t _rx_head_;
-    volatile uint16_t _rx_tail_;
-};
+/**
+ * @brief USART 配置表
+ */
+typedef struct {
+    usart_id_e id;          // USART ID
+    uint32_t baudrate;      // 波特率
+    uint8_t enable_rx_irq;  // 是否启用 RX 中断
+    uint8_t nvic_preempt;   // 抢占优先级
+    uint8_t nvic_sub;       // 子优先级
+} usart_cfg_t;
+
+/**
+ * @brief USART 运行时句柄
+ */
+typedef struct {
+    const usart_cfg_t* cfg;
+    uint8_t  rx_buf[USART_RX_BUF_SIZE];
+    volatile uint16_t rx_head;
+    volatile uint16_t rx_tail;
+} usart_t;
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 
-Usart usart1_create(uint32_t baudrate);
-Usart usart2_create(uint32_t baudrate);
+void usart_init(usart_t* handle, const usart_cfg_t* cfg);
+void usart_send_byte(usart_t* handle, uint8_t byte);
+void usart_send_string(usart_t* handle, const char* str);
+uint8_t usart_read_byte(usart_t* handle, uint8_t* out);
 
 #endif

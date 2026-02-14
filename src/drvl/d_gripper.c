@@ -16,7 +16,7 @@
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
 static void _send_servo_cmd(Gripper* self, uint16_t pulse, uint16_t time_ms);
-static void _init(Gripper* self, Usart* uart);
+static void _init(Gripper* self, usart_t* uart);
 static void _open(Gripper* self);
 static void _close(Gripper* self);
 static void _set_pos(Gripper* self, uint16_t pulse);
@@ -50,7 +50,7 @@ Gripper gripper_create(void) {
 static void _send_servo_cmd(Gripper* self, uint16_t pulse, uint16_t time_ms) {
     char buf[32];
     sprintf(buf, "#000P%04dT%04d!", pulse, time_ms);
-    self->_uart_->send_string(self->_uart_, buf);
+    usart_send_string(self->_uart_, buf);
 }
 
 /**
@@ -59,7 +59,7 @@ static void _send_servo_cmd(Gripper* self, uint16_t pulse, uint16_t time_ms) {
  * @param   uart 串口对象
  * @retval  None
  */
-static void _init(Gripper* self, Usart* uart) {
+static void _init(Gripper* self, usart_t* uart) {
     self->_uart_ = uart;
 }
 
