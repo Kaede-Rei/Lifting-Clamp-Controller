@@ -1,5 +1,6 @@
-.\objects\main.o: src\main\main.c
-.\objects\main.o: src\main\main.h
+.\objects\main.o: src\main.c
+.\objects\main.o: .\src\app\a_board.h
+.\objects\main.o: .\src\hal\can.h
 .\objects\main.o: .\lib\Start\stm32f10x.h
 .\objects\main.o: .\lib\Start\core_cm3.h
 .\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\stdint.h
@@ -29,13 +30,18 @@
 .\objects\main.o: .\lib\Library\stm32f10x_usart.h
 .\objects\main.o: .\lib\Library\stm32f10x_wwdg.h
 .\objects\main.o: .\lib\Library\misc.h
+.\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\main.o: .\src\hal\usart.h
+.\objects\main.o: .\src\hal\timer.h
+.\objects\main.o: .\src\hal\systick.h
+.\objects\main.o: .\src\hal\dwt.h
+.\objects\main.o: .\src\driver\d_encoder.h
+.\objects\main.o: .\src\driver\d_relay.h
+.\objects\main.o: .\src\driver\d_gripper.h
+.\objects\main.o: .\src\service\s_delay.h
+.\objects\main.o: .\src\service\s_log.h
 .\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\string.h
-.\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\stdlib.h
-.\objects\main.o: src\main\board.h
-.\objects\main.o: src\main\main.h
-.\objects\main.o: .\src\app\UART.h
-.\objects\main.o: .\src\app\Delay.h
-.\objects\main.o: .\src\app\Encoder.h
-.\objects\main.o: .\src\app\PID.h
-.\objects\main.o: .\src\app\TIM.h
+.\objects\main.o: D:\Keil 5--C51\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\main.o: .\src\service\s_pid.h
+.\objects\main.o: .\src\service\s_wireless_comms.h
+.\objects\main.o: .\src\app\a_fsm.h
