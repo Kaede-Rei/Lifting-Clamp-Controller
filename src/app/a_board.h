@@ -10,14 +10,15 @@
 #include "timer.h"
 #include "systick.h"
 #include "dwt.h"
+
 #include "d_encoder.h"
 #include "d_relay.h"
 #include "d_gripper.h"
-#include "s_comms.h"
-#include "s_lift_control.h"
+
 #include "s_delay.h"
 #include "s_log.h"
 #include "s_pid.h"
+#include "s_wireless_comms.h"
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
@@ -29,8 +30,6 @@ extern tim_t tick;
 extern Encoder lift_encoder;
 extern Relay lift_relay;
 extern Gripper gripper;
-extern Comms comms;
-extern LiftControl lift_ctrl;
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //
 

@@ -22,7 +22,7 @@ struct Gripper {
      * @param   motor_id 电机ID
      * @retval  None
      */
-    void(*init)(Gripper* self, can_cfg_t* can_cfg, uint16_t motor_id);
+    void(*init)(Gripper* self, can_t* can, uint16_t motor_id);
     /**
      * @brief   使能夹爪
      * @param   self 夹爪对象

@@ -18,9 +18,9 @@ typedef struct {
 } relay_cfg_t;
 
 typedef enum {
-    RelayDirStop_e = 0,
-    RelayDirA_e,
-    RelayDirB_e
+    RelayDirStop = 0,
+    RelayDirA,
+    RelayDirB
 } RelayDir_e;
 
 typedef struct Relay Relay;

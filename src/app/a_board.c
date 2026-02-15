@@ -23,7 +23,7 @@ static const can_cfg_t can_cfg = {
     .sjw = CAN_SJW_1tq,
     .bs1 = CAN_BS1_7tq,
     .bs2 = CAN_BS2_1tq,
-    .prescaler = 4,           /* 36 MHz / (4 * (1+7+1)) = 1 Mbps */
+    .prescaler = 4,           // 36 MHz / (4 * (1+7+1)) = 1 Mbps
     .nvic_preempt = 1,
     .nvic_sub = 0,
 };
@@ -34,14 +34,6 @@ static const usart_cfg_t usart1_cfg = {
     .enable_rx_irq = 1,
     .nvic_preempt = 3,
     .nvic_sub = 3,
-};
-
-static const usart_cfg_t usart2_cfg = {
-    .id = USART_2,
-    .baudrate = USART2_BAUD,
-    .enable_rx_irq = 0,
-    .nvic_preempt = 0,
-    .nvic_sub = 0,
 };
 
 static const tim_cfg_t tim_cfg_table[TIM_COUNT] = {
@@ -75,7 +67,7 @@ static const tim_cfg_t tim_cfg_table[TIM_COUNT] = {
         .periph = TIM3,
         .mode = TIM_MODE_BASE,
         .prescaler = 720 - 1,
-        .period = 1000 - 1,    /* 72 MHz / 720 / 1000 = 10 ms */
+        .period = 1000 - 1,    // 72 MHz / 720 / 1000 = 10 ms
         .enable_irq = 1,
         .nvic_preempt = 1,
         .nvic_sub = 1,
@@ -90,8 +82,9 @@ tim_t tick;
 Encoder lift_encoder;
 Relay lift_relay;
 Gripper gripper;
-Comms comms;
-LiftControl lift_ctrl;
+
+// 实际每毫米的脉冲数 (经测量校准)
+#define ACTUAL_PULSE_PER_MM     15.518f
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 
@@ -115,24 +108,20 @@ void a_board_init(void) {
     lift_encoder = encoder_create();
     lift_relay = relay_create();
     gripper = gripper_create();
-    comms = comms_create();
-    lift_ctrl = lift_ctrl_create();
 
-    /* HAL 初始化 (配置表驱动) */
+    /* HAL 初始化 */
     can_init(&can, &can_cfg);
     usart_init(&usart1, &usart1_cfg);
-    usart_init(&usart2, &usart2_cfg);
     tim_init(&tick, &tim_cfg_table[TIM_3]);
 
     /* 驱动初始化 */
-    lift_encoder.init(&lift_encoder, &tim_cfg_table[TIM_2], 10);
+    lift_encoder.init(&lift_encoder, &tim_cfg_table[TIM_2], 10, ACTUAL_PULSE_PER_MM);
     lift_relay.init(&lift_relay, &relay_cfg);
-    // gripper.init(&gripper, &usart2);
+    gripper.init(&gripper, &can, 0x01);
 
     /* 服务初始化 */
     s_delay_init(systick_get_ms, systick_is_timeout, dwt_get_us, dwt_is_timeout);
-    comms.init(&comms, &usart1, &lift_ctrl, &gripper);
-    lift_ctrl.init(&lift_ctrl, &lift_encoder, &lift_relay);
+    s_wireless_comms_init(&usart1, &lift_relay, &gripper);
 
     s_delay_ms(1000);
     printf("Board initialized!\r\n");

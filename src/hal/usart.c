@@ -146,13 +146,13 @@ void usart_send_string(usart_t* handle, const char* str) {
  * @brief   读取单字节 (从环形缓冲区)
  * @param   handle 句柄
  * @param   out 输出缓冲区
- * @retval  1: 成功, 0: 缓冲区空
+ * @retval  bool - true:成功, false:缓冲区空
  */
-uint8_t usart_read_byte(usart_t* handle, uint8_t* out) {
-    if(handle->rx_head == handle->rx_tail) return 0;
+bool usart_read_byte(usart_t* handle, uint8_t* out) {
+    if(handle->rx_head == handle->rx_tail) return false;
     *out = handle->rx_buf[handle->rx_tail];
     handle->rx_tail = (handle->rx_tail + 1) % USART_RX_BUF_SIZE;
-    return 1;
+    return true;
 }
 
 // ! ========================= 私 有 函 数 实 现 ========================= ! //
@@ -168,6 +168,7 @@ static void _usart_irq(usart_id_e id) {
     if(USART_GetITStatus(hw->periph, USART_IT_RXNE) != RESET) {
         uint8_t data = (uint8_t)USART_ReceiveData(hw->periph);
         uint16_t next = (handle->rx_head + 1) % USART_RX_BUF_SIZE;
+        // 如果缓冲区未满，则存储数据；否则丢弃数据
         if(next != handle->rx_tail) {
             handle->rx_buf[handle->rx_head] = data;
             handle->rx_head = next;

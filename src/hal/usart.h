@@ -8,7 +8,7 @@
 
 #include "stm32f10x.h"
 #include <stdint.h>
-
+#include <stdbool.h>
 
 // ! ========================= 接 口 变 量 / Typedef 声 明 ========================= ! //
 
@@ -51,6 +51,6 @@ typedef struct {
 void usart_init(usart_t* handle, const usart_cfg_t* cfg);
 void usart_send_byte(usart_t* handle, uint8_t byte);
 void usart_send_string(usart_t* handle, const char* str);
-uint8_t usart_read_byte(usart_t* handle, uint8_t* out);
+bool usart_read_byte(usart_t* handle, uint8_t* out);
 
 #endif

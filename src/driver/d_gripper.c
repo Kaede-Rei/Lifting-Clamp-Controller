@@ -64,10 +64,9 @@ static void _enable(Gripper* self) {
     can_send(self->_can_, self->_motor_id_, data, 8);
 
     // 切换为位置速度模式
-    uint16_t id_l = self->_motor_id_ & 0xFF;
-    uint16_t id_h = (self->_motor_id_ >> 8) & 0x07;
+    uint16_t id_l = self->_motor_id_ & 0x00FF;
     data[0] = (uint8_t)id_l;
-    data[1] = (uint8_t)id_h;
+    data[1] = 0x00;
     data[2] = 0x55;
     data[3] = 10;
     data[4] = 2;

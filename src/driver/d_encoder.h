@@ -19,7 +19,7 @@ struct Encoder {
      * @param   self 编码器对象
      * @retval  None
      */
-    void(*init)(Encoder* self, const tim_cfg_t* cfg, int period_ms);
+    void(*init)(Encoder* self, const tim_cfg_t* cfg, int period_ms, int32_t pulses_per_mm);
     /**
      * @brief   更新编码器数据
      * @param   self 编码器对象
@@ -44,6 +44,7 @@ struct Encoder {
     int _period_ms_;
 
     int32_t _total_pulses_;
+    int32_t _pulses_per_mm_;
     int32_t _position_mm_;
     int32_t _speed_;
 };

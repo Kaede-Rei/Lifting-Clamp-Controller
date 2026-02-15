@@ -11,8 +11,6 @@ int main(void) {
         if(tick.flag) {
             tick.flag = 0;
 
-            comms.process(&comms);
-            lift_ctrl.update(&lift_ctrl);
         }
     }
 }

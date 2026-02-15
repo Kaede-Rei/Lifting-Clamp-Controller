@@ -69,15 +69,15 @@ static void _init(Relay* self, const relay_cfg_t* cfg) {
  */
 static void _set_dir(Relay* self, RelayDir_e dir) {
     switch(dir) {
-        case RelayDirA_e:
+        case RelayDirA:
             GPIO_SetBits(self->_cfg_->port, self->_cfg_->pin_a);
             GPIO_ResetBits(self->_cfg_->port, self->_cfg_->pin_b);
             break;
-        case RelayDirB_e:
+        case RelayDirB:
             GPIO_ResetBits(self->_cfg_->port, self->_cfg_->pin_a);
             GPIO_SetBits(self->_cfg_->port, self->_cfg_->pin_b);
             break;
-        case RelayDirStop_e:
+        case RelayDirStop:
         default:
             GPIO_ResetBits(self->_cfg_->port, self->_cfg_->pin_a);
             GPIO_ResetBits(self->_cfg_->port, self->_cfg_->pin_b);
