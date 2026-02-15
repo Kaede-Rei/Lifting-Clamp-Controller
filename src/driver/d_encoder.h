@@ -31,13 +31,13 @@ struct Encoder {
      * @param   self 编码器对象
      * @retval  int32_t 位置(mm)
      */
-    int32_t(*get_position)(const Encoder* self);
+    float(*get_position)(const Encoder* self);
     /**
      * @brief   获取速度
      * @param   self 编码器对象
      * @retval  int32_t 速度(mm/s)
      */
-    int32_t(*get_speed)(const Encoder* self);
+    float(*get_speed)(const Encoder* self);
 
 // private:
     tim_cfg_t _tim_cfg_;
@@ -45,8 +45,8 @@ struct Encoder {
 
     int32_t _total_pulses_;
     int32_t _pulses_per_mm_;
-    int32_t _position_mm_;
-    int32_t _speed_;
+    float _position_mm_;
+    float _speed_;
 };
 
 // ! ========================= 接 口 函 数 声 明 ========================= ! //

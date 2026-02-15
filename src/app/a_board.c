@@ -4,9 +4,15 @@
  *        按 HAL → DRVL → SRVL 顺序创建并初始化所有模块
  */
 #include "a_board.h"
-#include "main.h"
 
 // ! ========================= 变 量 声 明 ========================= ! //
+
+#define USART1_BAUD             115200
+#define USART2_BAUD             115200
+#define TICK_PERIOD_MS          10
+
+// 实际每毫米的脉冲数 (经测量校准)
+#define ACTUAL_PULSE_PER_MM     15.518f
 
 static const relay_cfg_t relay_cfg = {
     .rcc_mask = RCC_APB2Periph_GPIOB,
@@ -82,9 +88,6 @@ tim_t tick;
 Encoder lift_encoder;
 Relay lift_relay;
 Gripper gripper;
-
-// 实际每毫米的脉冲数 (经测量校准)
-#define ACTUAL_PULSE_PER_MM     15.518f
 
 // ! ========================= 私 有 函 数 声 明 ========================= ! //
 

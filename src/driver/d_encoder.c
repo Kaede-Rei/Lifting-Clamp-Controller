@@ -14,8 +14,8 @@
 static int _read_raw(const tim_cfg_t* cfg);
 static void _init(Encoder* self, const tim_cfg_t* cfg, int period_ms, int32_t pulses_per_mm);
 static void _update(Encoder* self);
-static int32_t _get_position(const Encoder* self);
-static int32_t _get_speed(const Encoder* self);
+static float _get_position(const Encoder* self);
+static float _get_speed(const Encoder* self);
 
 // ! ========================= 接 口 函 数 实 现 ========================= ! //
 
@@ -80,25 +80,24 @@ static void _update(Encoder* self) {
     else
         self->_total_pulses_ -= (65536 - raw);
 
-    self->_position_mm_ = (int32_t)((float)self->_total_pulses_ / self->_pulses_per_mm_ + 0.5f);
-    self->_speed_ = (int32_t)((float)raw / self->_pulses_per_mm_
-        / (self->_period_ms_ / 1000.0f));
+    self->_position_mm_ = (float)self->_total_pulses_ / self->_pulses_per_mm_ + 0.5f;
+    self->_speed_ = (float)raw / self->_pulses_per_mm_ / (self->_period_ms_ / 1000.0f);
 }
 
 /**
  * @brief   获取位置
  * @param   self 编码器对象
- * @retval  int32_t 位置(mm)
+ * @retval  float 位置(mm)
  */
-static int32_t _get_position(const Encoder* self) {
+static float _get_position(const Encoder* self) {
     return self->_position_mm_;
 }
 
 /**
  * @brief   获取速度
  * @param   self 编码器对象
- * @retval  int32_t 速度(mm/s)
+ * @retval  float 速度(mm/s)
  */
-static int32_t _get_speed(const Encoder* self) {
+static float _get_speed(const Encoder* self) {
     return self->_speed_;
 }
