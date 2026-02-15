@@ -13,7 +13,7 @@
 *   **夹爪控制**: 通过 CAN 总线控制末端执行器的开合角度。
 *   **状态管理**: 内置分层有限状态机 (HFSM)，确保系统在不同模式（空闲、移动、故障）间的安全切换。
 
-## 🛠️ 技术栈与环境
+## 🛠️ 环境配置
 
 *   **硬件平台**: STM32F103 (标准库)
 *   **开发环境**: Keil MDK-ARM v5 / VS Code (Embedded IDE 插件)
@@ -72,17 +72,3 @@ src/
     *   GPIOB Pin 1 (方向 B)
 *   **夹爪 (Gripper)**: CAN1 总线
 *   **串口 (Wireless)**: USART1 (TX/RX)
-
-## 🚀 编译与烧录
-
-### 使用 Visual Studio Code (推荐)
-本项目已配置 EIDE 插件。
-1.  安装 [Embedded IDE](https://marketplace.visualstudio.com/items?itemName=cl.eide) 插件。
-2.  打开本项目文件夹。
-3.  点击 EIDE 侧边栏的 **Build** 按钮进行编译。
-4.  连接下载器 (ST-Link/J-Link)，点击 **Flash** 按钮烧录。
-
-### 使用 Keil MDK
-1.  打开 `Project.uvprojx`。
-2.  点击 **Rebuild** (F7) 编译。
-3.  点击 **Download** (F8) 烧录。

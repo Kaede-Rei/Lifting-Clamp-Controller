@@ -13,7 +13,7 @@ Designed for fruit and vegetable harvesting scenarios, this STM32 firmware acts 
 *   **Gripper Control**: Controls the opening and closing angle of the end-effector via the CAN bus.
 *   **State Management**: Built-in Hierarchical Finite State Machine (HFSM) ensures safe transitions between different system modes (Idle, Moving, Error).
 
-## 🛠️ Tech Stack & Environment
+## 🛠️ Environment & Configuration
 
 *   **Hardware Platform**: STM32F103 (Standard Peripheral Library)
 *   **IDE**: Keil MDK-ARM v5 / VS Code (Embedded IDE extension)
@@ -72,17 +72,3 @@ System states are managed by `a_fsm.c` using a hierarchical design:
     *   GPIOB Pin 1 (Direction B)
 *   **Gripper**: CAN1 Bus
 *   **Serial (Wireless)**: USART1 (TX/RX)
-
-## 🚀 Build & Flash
-
-### Using Visual Studio Code (Recommended)
-This project is configured with the EIDE extension.
-1.  Install the [Embedded IDE](https://marketplace.visualstudio.com/items?itemName=cl.eide) extension.
-2.  Open this project folder.
-3.  Click the **Build** button in the EIDE sidebar to compile.
-4.  Connect your debugger (ST-Link/J-Link) and click **Flash** to upload.
-
-### Using Keil MDK
-1.  Open `Project.uvprojx`.
-2.  Click **Rebuild** (F7) to compile.
-3.  Click **Download** (F8) to flash.
